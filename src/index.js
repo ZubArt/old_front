@@ -26,16 +26,22 @@ import 'angular-translate-loader-static-files'
 
 let list = [
     //global
-    aui, am, ar, at, as, s
+    aui, am, ar, at, as
 ];
 
-angular.module('hub', list)
+let load = context => context.keys().map(item => context(item).default);
+
+let appList = load(require.context('.', true, /\.\/app\.[a-z]+\/index\.js$/));
+
+appList.push.apply(appList, list);
+
+angular.module('app', appList)
     .constant('CFG', config)
     .config(state)
     .config(translate)
     .run(($state, $rootScope) => {
         $rootScope.$state = $state;
-        $state.go('app.login');
+        $state.go('app.portfolio');
     })
     .directive('autofocus', ($timeout) => {
         return {

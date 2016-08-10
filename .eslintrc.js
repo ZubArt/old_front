@@ -37,7 +37,7 @@ module.exports = {
         // "space-before-function-paren": [ 2, 'always' ],
         "eol-last": 2,
         "eqeqeq": 2,
-        "max-len": [ 2, 100, 4 ],
+        "max-len": [ 2, 120, 4 ],
         "new-cap": [ 2, { capIsNew: false } ],
         "no-eq-null": 2,
         "no-mixed-spaces-and-tabs": 2,

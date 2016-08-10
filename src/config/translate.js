@@ -2,19 +2,20 @@
     return requireContext.keys().map(requireContext);
 })(require.context('./po', false, /\.po$/));
 
+/** @ngInject */
 export default $translateProvider => {
     $translateProvider
         .useStaticFilesLoader({
-            prefix: 'i18n/',
+            prefix: '../i18n/',
             suffix: '.json'
         })
-        .preferredLanguage('en')
-        .registerAvailableLanguageKeys(['en', 'fr'], {
+        .preferredLanguage('ru')
+        .registerAvailableLanguageKeys(['en', 'ru'], {
             'en_*': 'en',
-            'fr_*': 'fr',
-            '*': 'en'
+            'ru_*': 'ru',
+            '*': 'ru'
         })
-        .fallbackLanguage('en')
+        .fallbackLanguage('ru')
         //.useLoaderCache(true)
         // .useSanitizeValueStrategy('sanitize')
         .useSanitizeValueStrategy('escaped')

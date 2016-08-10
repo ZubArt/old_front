@@ -5,6 +5,7 @@ const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const FaviconWebpackPlugin = require('favicons-webpack-plugin');
+const NgAnnotatePlugin = require('ng-annotate-webpack-plugin');
 
 const TARGET = process.env.npm_lifecycle_event;
 const buildPath = path.join(__dirname, 'dist');
@@ -12,7 +13,7 @@ const buildPath = path.join(__dirname, 'dist');
 const common = {
     entry: {
         app: ['./src/index.js'],
-        vendors: ['angular']
+        vendors: ['angular', 'd3']
     },
     output: {
         path: buildPath,
@@ -29,11 +30,8 @@ const common = {
         loaders: [
             {
                 test: /\.js$/,
-                loader: 'babel',
-                exclude: /node_modules/,
-                query: {
-                    presets: ['es2015']
-                }
+                loader: 'babel?presets[]=es2015',
+                exclude: /node_modules/
             },
             {
                 test: /\.styl$/,
@@ -64,7 +62,9 @@ const common = {
         new HtmlWebpackPlugin({
             template: './src/index.jade'
         }),
+        new NgAnnotatePlugin(),
         // new webpack.ProvidePlugin({ angular: 'angular' }),
+        new webpack.ProvidePlugin({ d3: 'd3' }),
         new webpack.optimize.CommonsChunkPlugin('vendors','vendors.js')
     ]
 };
@@ -82,11 +82,8 @@ if (TARGET === 'translate') {
             loaders: [
                 {
                     test: /\.js$/,
-                    loader: 'babel',
-                    exclude: /node_modules/,
-                    query: {
-                        presets: ['es2015']
-                    }
+                    loader: 'angular-gettext-extract-loader?pofile=src/config/template.pot!babel?presets[]=es2015',
+                    exclude: /node_modules/
                 },
                 {
                     test: /\.jade$/,
@@ -118,7 +115,7 @@ if (TARGET === 'translate') {
     }
 } else if (TARGET === 'start' || !TARGET) {
     module.exports = merge(common, {
-        devtool: 'source-map',
+        // devtool: 'source-map',
         devServer: {
             contentBase: buildPath,
             historyApiFallback: true,
