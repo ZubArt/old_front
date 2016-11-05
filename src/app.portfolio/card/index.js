@@ -3,7 +3,7 @@ import template from './index.jade'
 import AnimatedCover from './animatedCover'
 
 /** @ngInject */
-export default ($document, $timeout) => {
+export default ($document) => {
     return {
         restrict: 'E',
         transclude: true,
