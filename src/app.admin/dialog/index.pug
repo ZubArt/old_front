@@ -1,0 +1,34 @@
+md-dialog(aria-label="{{ 'Post' | translate }}")
+    form.app_admin__dialog__form(name='current', ng-submit='submit(item)')
+        md-toolbar
+            .md-toolbar-tools
+                h2 {{ 'Post' | translate }}
+                span(flex='')
+                md-button.md-icon-button(ng-click='cancel()' aria-label="{{ 'Cancel' | translate }}")
+                    md-icon close
+        md-dialog-content
+            .md-dialog-content
+
+                //images:
+                //    preview:
+                //    main:
+                //urls:
+                //    src:
+                //    dev:
+                //    out:
+                //tags: []
+
+
+                md-input-container.md-block(md-no-float)
+                    label {{ "Title" | translate }}
+                    input(id="title" ng-model='item.title', placeholder='{{ "Title" | translate }}')
+
+                md-input-container.md-block(md-no-float)
+                    label {{ "Description" | translate }}
+                    input(id="description" ng-model='item.description', placeholder='{{ "Description" | translate }}')
+
+        md-dialog-actions(layout='row')
+            md-button.md-primary(type='submit' ng-disabled='current.$invalid')
+                | {{ 'Save' | translate }}
+            md-button.md-primary(type='button' ng-click='cancel()')
+                | {{ 'Cancel' | translate }}

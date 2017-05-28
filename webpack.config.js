@@ -38,8 +38,8 @@ const common = {
                 loader: ExtractTextPlugin.extract('css!stylus')
             },
             {
-                test: /\.jade$/,
-                loader: 'jade'
+                test: /\.(jade|pug)$/,
+                loader: 'pug'
             },
             {
                 test: /\.(jpg|png|svg)$/,
@@ -60,7 +60,7 @@ const common = {
         new webpack.optimize.DedupePlugin(),
         new ExtractTextPlugin('style.css'),
         new HtmlWebpackPlugin({
-            template: './src/index.jade'
+            template: './src/index.pug'
         }),
         new NgAnnotatePlugin(),
         // new webpack.ProvidePlugin({ angular: 'angular' }),
@@ -86,12 +86,12 @@ if (TARGET === 'translate') {
                     exclude: /node_modules/
                 },
                 {
-                    test: /\.jade$/,
+                    test: /\.(jade|pug)$/,
                     loader: [
                         'file?name=app.js',
                         'angular-gettext-extract-loader?pofile=src/config/template.pot',
                         'rename?[path][name].html',
-                        'jade-html?pretty=true'
+                        'pug-html?pretty=true'
                     ].join('!')
                 },
                 {
@@ -115,7 +115,7 @@ if (TARGET === 'translate') {
     }
 } else if (TARGET === 'start' || !TARGET) {
     module.exports = merge(common, {
-        // devtool: 'source-map',
+        devtool: 'inline-source-map',
         devServer: {
             contentBase: buildPath,
             historyApiFallback: true,

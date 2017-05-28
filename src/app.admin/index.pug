@@ -1,0 +1,33 @@
+.admin(layout="column", layout-align="start stretch", layout-fill)
+    header.admin__header
+        h1 {{ "Posts" | translate }}
+
+    .md-table-toolbar
+        .md-toolbar-tools(layout='column', layout-align="start start", ng-class='{bigger: query.show}')
+            div(layout='row' layout-align="start center")
+                md-button.md-icon-button.admin__add_button(ng-click='edit($event)' aria-label='{{ "Add new item" | translate }}')
+                    md-icon add
+
+                form.animate-show(ng-class='{hidden: !query.show}')
+                    md-input-container.md-block(md-no-float)
+                        md-icon search
+                        input(
+                            id="search"
+                            ng-model='query.filter.$',
+                            placeholder='search'
+                        )
+
+            table.admin__table(md-table, md-progress='deferred')
+                thead(md-head, md-order='query.order')
+                    tr(md-row)
+                        th(md-column, md-order-by='title')
+                            span {{ 'Title' | translate }}
+                        th(md-column, md-order-by='description')
+                            span {{ 'Description' | translate }}
+
+    md-table-container
+        table.admin__table(md-table, md-progress='deferred' md-row-select='selected')
+            tbody(md-body)
+                tr(md-row, ng-repeat='item in items | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit | filter:query.filter:query.strict track by item._id')
+                    td(md-cell) {{ item.title }}
+                    td(md-cell) {{ item.description }}

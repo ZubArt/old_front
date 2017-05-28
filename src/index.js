@@ -1,3 +1,4 @@
+import Utils from './utils'
 /**
  * CONFIGS
  */
@@ -24,24 +25,31 @@ import as from 'angular-sanitize'
 //don't need put in list
 import 'angular-translate-loader-static-files'
 
-let list = [
+const list = [
     //global
     aui, am, ar, at, as
 ];
 
-let load = context => context.keys().map(item => context(item).default);
+// application modules
+list.push.apply(
+    list,
+    // make context for loading all our app modules
+    // it is the feature of webpack
+    Utils.loadWithDefault(require.context('.', true, /\.\/app\.[a-z]+\/index\.js$/))
+);
 
-let appList = load(require.context('.', true, /\.\/app\.[a-z]+\/index\.js$/));
+// application services
+import services from './services';
+list.push.apply(list, services);
 
-appList.push.apply(appList, list);
-
-angular.module('app', appList)
-    .constant('CFG', config)
+angular.module('app', list)
+    .constant('appConfig', config)
     .config(state)
     .config(translate)
     .run(($state, $rootScope) => {
         $rootScope.$state = $state;
-        $state.go('app.portfolio');
+        const local = /localhost/.test(document.location.host);
+        $state.go(local ? 'app.admin' : 'app.portfolio');
     })
     .directive('autofocus', ($timeout) => {
         return {

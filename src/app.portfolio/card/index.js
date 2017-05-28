@@ -1,9 +1,9 @@
 import './index.styl'
-import template from './index.jade'
+import template from './index.pug'
 import AnimatedCover from './animatedCover'
 
 /** @ngInject */
-export default ($document) => {
+export default $document => {
     return {
         restrict: 'E',
         transclude: true,

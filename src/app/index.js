@@ -1,5 +1,5 @@
 import '../styles'
-import template from './index.jade'
+import template from './index.pug'
 
 /** @ngInject */
 export default ($stateProvider, $urlRouterProvider) => {

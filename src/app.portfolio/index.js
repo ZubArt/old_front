@@ -1,7 +1,7 @@
 import router from './router'
 import card from './card'
 
-let dependencies = [
+const dependencies = [
     require('angular-ui-router')
 ];
 
