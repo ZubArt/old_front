@@ -21,13 +21,14 @@ import am from 'angular-material'
 import ar from 'angular-resource'
 import at from 'angular-translate'
 import as from 'angular-sanitize'
+import ng from 'ng-showdown'
 
 //don't need put in list
 import 'angular-translate-loader-static-files'
 
 const list = [
     //global
-    aui, am, ar, at, as
+    aui, am, ar, at, as, ng.name
 ];
 
 // application modules

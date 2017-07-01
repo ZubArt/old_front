@@ -12,8 +12,8 @@ const buildPath = path.join(__dirname, 'dist');
 
 const common = {
     entry: {
-        app: ['./src/index.js'],
-        vendors: ['angular', 'd3']
+        vendors: ['angular', 'd3', './src/vendors.js'],
+        app: ['./src/index.js']
     },
     output: {
         path: buildPath,
@@ -115,7 +115,7 @@ if (TARGET === 'translate') {
     }
 } else if (TARGET === 'start' || !TARGET) {
     module.exports = merge(common, {
-        devtool: 'inline-source-map',
+        devtool: 'eval',
         devServer: {
             contentBase: buildPath,
             historyApiFallback: true,

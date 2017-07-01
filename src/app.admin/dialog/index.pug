@@ -3,32 +3,84 @@ md-dialog(aria-label="{{ 'Post' | translate }}")
         md-toolbar
             .md-toolbar-tools
                 h2 {{ 'Post' | translate }}
-                span(flex='')
+                span(flex)
                 md-button.md-icon-button(ng-click='cancel()' aria-label="{{ 'Cancel' | translate }}")
                     md-icon close
         md-dialog-content
-            .md-dialog-content
+            .md-dialog-content.app_admin__dialog__content
 
-                //images:
-                //    preview:
-                //    main:
-                //urls:
-                //    src:
-                //    dev:
-                //    out:
-                //tags: []
-
-
-                md-input-container.md-block(md-no-float)
+                md-input-container.md-block(flex-gt-sm)
                     label {{ "Title" | translate }}
-                    input(id="title" ng-model='item.title', placeholder='{{ "Title" | translate }}')
+                    input(ng-model='item.title' required)
 
-                md-input-container.md-block(md-no-float)
-                    label {{ "Description" | translate }}
-                    input(id="description" ng-model='item.description', placeholder='{{ "Description" | translate }}')
+                div(layout-gt-sm="row")
+                    md-input-container.md-block(flex="50")
+                        label {{ "Description" | translate }}
+                        textarea(ng-model='item.description')
+                            | {{ item.description }}
+                    .md-block(flex markdown-to-html="item.description")
+
+                md-input-container
+                    label {{ "Project's date" | translate }}
+                    md-datepicker(ng-model="item.dateOfProject" md-placeholder="Enter date")
+
+                div(layout-gt-sm="column")
+                    h2.md-title {{ "Images" | translate }}
+                    md-progress-linear(md-mode="determinate" value="{{fileProgress}}" ng-show="loading")
+                    .md-block(ng-hide="loading")
+                        label.md-button.md-raised.md-primary(for="imgFile") {{ 'Choose Files' | translate }}
+                        input.ng-hide#imgFile(type="file" onchange="angular.element(this).scope().fileChange(event)")
+                    div(layout-gt-sm="row")
+                        .md-block(flex="40")
+                            h3.md-subhead {{ "Preview" | translate }}
+                            md-progress-circular(md-mode="indeterminate" ng-show='processing')
+                            img(ng-src='{{item.images.preview}}' width="300px" ng-hide="processing")
+                        .md-block(flex="20")
+                            md-button.md-primary(ng-click='previewRefresh()')
+                                md-icon refresh
+                        .md-block(flex="40")
+                            h3.md-subhead {{ "Origin" | translate }}
+                            img(ng-src='{{item.images.full}}' width="300px" ng-hide="loading")
+
+                md-input-container
+                    label {{ "Video url" | translate }}
+                    input(ng-model="item.images.video")
+
+                div(layout-gt-sm="column")
+                    h2.md-title {{ "Urls" | translate }}
+                    div(layout-gt-sm="row")
+                        md-input-container.md-block(flex-gt-sm)
+                            label {{ "Source" | translate }}
+                            input(ng-model='item.urls.src' value="{{item.urls.src}}")
+                        md-input-container.md-block(flex-gt-sm)
+                            label {{ "Dev" | translate }}
+                            input(ng-model='item.urls.dev' value="{{item.urls.dev}}")
+                        md-input-container.md-block(flex-gt-sm)
+                            label {{ "Prod" | translate }}
+                            input(ng-model='item.urls.prod' value="{{item.urls.prod}}")
+
+                md-chips(
+                        ng-model='selectedTags'
+                        md-autocomplete-snap=''
+                        md-transform-chip='transformChip($chip)'
+                        md-separator-keys='keys'
+                    )
+                    md-autocomplete(
+                            md-selected-item='selectedTag'
+                            md-search-text='searchText'
+                            md-items='tag in querySearch(searchText)'
+                            placeholder="{{ 'Search tags' | translate }}"
+                            md-item-text='tag'
+                            md-input-minlength=0
+                        )
+                        span(md-highlight-text='searchText') {{tag.name}}
+                    md-chip-template
+                        span
+                            strong {{$chip.name}}
+                            em {{$chip.type}}
 
         md-dialog-actions(layout='row')
             md-button.md-primary(type='submit' ng-disabled='current.$invalid')
                 | {{ 'Save' | translate }}
-            md-button.md-primary(type='button' ng-click='cancel()')
+            md-button.md-primary(ng-click='cancel()')
                 | {{ 'Cancel' | translate }}
