@@ -3,17 +3,16 @@ import template from './index.pug'
 import AnimatedCover from './animatedCover'
 
 /** @ngInject */
-export default $document => {
+export default ($document, $timeout) => {
     return {
-        restrict: 'E',
+        restrict: 'AE',
         transclude: true,
         scope: {
-            href: '=',
-            image: '='
+            data: '='
         },
         template,
-        link: (scope, element) => {
-            element.ready(() => new AnimatedCover(element, $document))
+        link: ($scope, element) => {
+            element.ready(() => new AnimatedCover(element, $document, $scope, $timeout))
         }
     }
 }

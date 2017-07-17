@@ -49,7 +49,7 @@ angular.module('app', list)
     .config(translate)
     .run(($state, $rootScope) => {
         $rootScope.$state = $state;
-        const local = /localhost/.test(document.location.host);
+        const local = false && /localhost/.test(document.location.host);
         $state.go(local ? 'app.admin' : 'app.portfolio');
     })
     .directive('autofocus', ($timeout) => {

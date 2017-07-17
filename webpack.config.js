@@ -29,6 +29,10 @@ const common = {
     module: {
         loaders: [
             {
+                test: /favicon\.icon$/,
+                loader: 'file?name=[name].[ext]'
+            },
+            {
                 test: /\.js$/,
                 loader: 'babel?presets[]=es2015',
                 exclude: /node_modules/
@@ -138,7 +142,10 @@ if (TARGET === 'translate') {
                     warnings: false
                 }
             }),
-            new FaviconWebpackPlugin('./src/favicon.png'),
+            new FaviconWebpackPlugin({prefix: 'icons/', logo: './src/favicon.png', icons: {
+                favicons: true,
+                opengraph: true
+            }}),
         ]
     });
 }

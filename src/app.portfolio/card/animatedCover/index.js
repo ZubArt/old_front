@@ -1,4 +1,9 @@
 import Node from './node'
+function rand(max, min) {
+    min = min || 0;
+    return Math.random() * (max - min) + min;
+}
+
 
 export default class AnimatedCover {
 
@@ -7,9 +12,10 @@ export default class AnimatedCover {
         return `ac_${AnimatedCover.counter++}`
     }
 
-    constructor(element, $document) {
+    constructor(element, $document, $scope, $timeout) {
         this.element = element;
         this.id = AnimatedCover.getNextId();
+        const {data} = $scope;
 
         let that = element[0];
 
@@ -28,9 +34,19 @@ export default class AnimatedCover {
         let tmpCanvas = $document[0].createElement('canvas');
         let tmpCtx = tmpCanvas.getContext('2d');
 
+        const img = new Image();
+        let hasImg = false;
+        if (data && data.images && data.images.preview) {
+            img.onload = () => {
+                img.loaded = hasImg = true;
+                updateSize()
+            };
+            img.src = data.images.preview;
+        }
+
         let updateSize = () => {
-            w = this.w = that.clientWidth;
-            h = this.h = that.clientHeight;
+            w = this.w;
+            h = this.h;
 
             canvas.width = w;
             canvas.height = h;
@@ -41,10 +57,32 @@ export default class AnimatedCover {
             tmpCtx.fillStyle = 'hsl(' + (Math.random() * 300 | 0) + ',100%,50%)';
             tmpCtx.fillRect(0, 0, w, h);
 
+            if (hasImg) {
+                tmpCtx.drawImage(img, 0, 0, w, h);
+            }
+
             rawData = tmpCtx.getImageData(0, 0, w, h);
             nodes = AnimatedCover.getNodes(rawData, w, h);
+            invalid = true;
         };
-        updateSize();
+
+        let timer;
+
+        const resizeTimeout = () => timer = timer || $timeout(checkResize, 0);
+
+        $scope.$watchGroup([() => that.clientWidth, () => that.clientHeight], resizeTimeout);
+        angular.element(window).on('resize', resizeTimeout);
+
+        const checkResize = () => {
+            timer = null;
+            if (this.w !== that.clientWidth || this.h !== that.clientHeight) {
+                this.w = that.clientWidth || 1;
+                this.h = that.clientHeight || 1;
+                invalid = true;
+            }
+        };
+
+        checkResize();
 
         let lastTimeRedraw = false;
         let draw = () => {
@@ -54,15 +92,16 @@ export default class AnimatedCover {
                 return;
 
             if (w !== this.w || h !== this.h) {
-                updateSize()
+                updateSize();
             }
 
             let l = rawData.data.length;
             while (l--) {
-                rawData.data[l] -= 10;
+                rawData.data[l] = 0;
             }
 
             invalid = !lastTimeRedraw;
+            mouseOn && mm(that, lastEvent);
 
             l = nodes.length;
             let atHome = l;
@@ -85,7 +124,6 @@ export default class AnimatedCover {
             ctx.clearRect(0, 0, w, h);
             ctx.putImageData(rawData, 0, 0);
             ctx.restore();
-            mouseOn && mm(that, lastEvent);
         };
         draw();
 
@@ -97,36 +135,56 @@ export default class AnimatedCover {
 
             if (!nodes || !nodes.length)
                 return;
-            nodes.forEach(function (d) {
-                let dx = d.x - point[0];
-                let dy = d.y - point[1];
-                let c = Math.sqrt(dx * dx + dy * dy);
-                if (c < (200 * Math.random() | 0)) {
-                    d.target.x += dx;
-                    d.target.y += dy;
-                    d.target.x = AnimatedCover.contains(d.target.x, 0, w);
-                    d.target.y = AnimatedCover.contains(d.target.y, 0, h);
+
+            let l = nodes.length, dx, dy, node, c;
+            while(l--) {
+                node = nodes[l];
+                dx = node.x - point[0];
+                dy = node.y - point[1];
+                c = Math.sqrt(dx * dx + dy * dy);
+                if (c < (rand(200, 50) | 0) ) {
+                    node.target.x += dx;
+                    node.target.y += dy;
+                    node.target.x = AnimatedCover.contains(node.target.x, 0, w);
+                    node.target.y = AnimatedCover.contains(node.target.y, 0, h);
                 }
-            });
+            }
             invalid = true;
         }
 
+        const mouseover = () => {
+            mouseOn = true;
+        };
+        const mouseout = () => {
+            mouseOn = false;
+
+            let l = nodes.length, d;
+            while (l--) {
+                d = nodes[l];
+                d.target.x = d.origin.x;
+                d.target.y = d.origin.y;
+            }
+            lastTimeRedraw = false;
+            invalid = true;
+        };
+        const mousemove = function(event) {
+            mm(this, event);
+        };
+
         element
-            .on('mouseover', () => {
-                mouseOn = true;
-            })
-            .on('mouseout', () => {
-                mouseOn = false;
-                nodes.forEach(function (d) {
-                    d.target.x = d.origin.x;
-                    d.target.y = d.origin.y;
-                });
-                lastTimeRedraw = false;
-                invalid = true;
-            })
-            .on('mousemove', function(event) {
-                mm(this, event);
-            })
+            .on('mouseenter', mouseover)
+            .on('mouseleave', mouseout)
+            .on('mousemove', mousemove)
+        ;
+
+        $scope.$on('$destroy', () => {
+            element
+                .off('mouseenter', mouseover)
+                .off('mouseleave', mouseout)
+                .off('mousemove', mousemove)
+            ;
+            angular.element(window).off('resize', resizeTimeout);
+        });
     }
 
     static getNodes(imageData, w, h) {

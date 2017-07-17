@@ -1,2 +1,27 @@
-.card_container
-    card(ng-repeat='item in data' style='{{ item.style }}') {{ item.text }}
+#content(layout="column" flex md-scroll-y)
+    md-toolbar#toolbar.site-content-toolbar.md-whiteframe-1dp
+        .md-toolbar-tools(layout='row' layout-align='end center')
+            img.site-icon(hide-xs ng-src="./icons/android-chrome-72x72.png" alt="ArtZub")
+            md-nav-bar(md-selected-nav-item='currentNavItem' nav-bar-aria-label='navigation links' flex layout='row' layout-align='end streach')
+                md-nav-item(md-nav-click="goto('page1')", name='page2') WORKS
+                md-nav-item(md-nav-click="goto('page2')", name='page3') ABOUT
+                md-nav-item(md-nav-click="goto('page2')", name='page5') BLOG
+    .app__pages(layout='row' fill-height flex)
+        .app__page(flex)
+            md-grid-list(md-cols='1' md-cols-sm='2' md-cols-md='3'
+                md-cols-gt-md='6' md-row-height-gt-md='16:10' md-row-height='16:10'
+                md-gutter='8px' md-gutter-gt-sm='4px')
+                md-grid-tile(ng-repeat='item in items' md-rowspan='{{item.rs}}' md-colspan='{{item.cs}}' md-colspan-sm='1' md-colspan-xs='1')
+                    .card(card data="item" style='background-image: url("{{item.images.full}}")' layout='column' layout-align="center center")
+                        .card__info(layout='column' layout-align="center center" flex='grow')
+                            .card__bar(layout='row' layout-align="center center")
+                                md-button
+                                    md-icon subject
+                                //md-button
+                                //    md-icon favorite_border
+                                md-button
+                                    md-icon share
+
+
+                    md-grid-tile-footer
+                        h3 {{item.title}}

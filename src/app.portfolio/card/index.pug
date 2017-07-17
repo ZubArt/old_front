@@ -1,7 +1,2 @@
-.card
-    .card__cell
-        a.card__anchor(href='{{ href }}')
-            .card__wrapper
-                .card__info(ng-transclude)
-            .card__cover
-                canvas(data-src="{{ image }}") don't support
+.card__wrapper(layout='column' flex ng-transclude)
+canvas.card__cover don't support
